@@ -5,7 +5,7 @@ $id = (int) ($_GET['id'] ?? 0);
 $r = q(RECINTO_SELECT . ' WHERE r.id = ?', [$id])->fetch();
 if (!$r) {
     http_response_code(404);
-    flash('warning', 'Ese recinto no existe.');
+    flash('warning', 'No encontramos este recinto, verifica la informacion e intentalo de nuevo.');
     redirect('recintos.php');
 }
 

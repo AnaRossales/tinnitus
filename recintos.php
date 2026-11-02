@@ -76,9 +76,9 @@ require __DIR__ . '/includes/header.php';
     <?php if (!$recintos): ?>
         <div class="empty-state">
             <i class="bi bi-building"></i>
-            <p>No encontramos recintos con esos filtros. Si existe y no está aquí, pide que lo agreguemos.</p>
+            <p>No encontramos recintos con los filtros seleccionados. Puedes solicitar que agreguemos uno nuevo.</p>
             <div class="d-flex flex-wrap justify-content-center gap-2">
-                <a class="btn btn-indigo" href="<?= url('solicitar.php?tipo=recinto' . ($buscar !== '' ? '&nombre=' . urlencode($buscar) : '')) ?>"><i class="bi bi-plus-circle"></i> Solicitar este recinto</a>
+                <a class="btn btn-indigo" href="<?= url('solicitar.php?tipo=recinto' . ($buscar !== '' ? '&nombre=' . urlencode($buscar) : '')) ?>"><i class="bi bi-plus-circle"></i> Solicitar nuevo recinto</a>
                 <a class="btn btn-light" href="<?= url('recintos.php') ?>">Ver todos los recintos</a>
             </div>
         </div>

@@ -33,15 +33,20 @@ tabla.addEventListener('click', async event => {
     if (event.target.closest('.btn-rechazar')) {
         filaActual = fila;
         formRechazo.reset();
+        actualizarDetalle();
         formRechazo.classList.remove('was-validated');
         document.getElementById('rechazo-resumen').textContent = fila.dataset.resumen;
         modalRechazo.show();
     }
 });
 
-document.getElementById('motivo-rapido').addEventListener('change', event => {
-    if (event.target.value) formRechazo.motivo.value = event.target.value;
-});
+// "Otro" no dice nada por sí solo, así que en ese caso la explicación es obligatoria.
+function actualizarDetalle() {
+    const esOtro = formRechazo.motivo.value === 'Otro';
+    formRechazo.detalle.required = esOtro;
+    document.getElementById('detalle-opcional').textContent = esOtro ? '(obligatoria)' : '(opcional)';
+}
+formRechazo.motivo.addEventListener('change', actualizarDetalle);
 
 formRechazo.addEventListener('submit', async event => {
     event.preventDefault();
@@ -52,7 +57,12 @@ formRechazo.addEventListener('submit', async event => {
     const boton = formRechazo.querySelector('[type="submit"]');
     cargando(boton, true);
     try {
-        const res = await postJSON(location.pathname, { accion: 'rechazar', id: filaActual.dataset.id, motivo: formRechazo.motivo.value.trim() });
+        const res = await postJSON(location.pathname, {
+            accion: 'rechazar',
+            id: filaActual.dataset.id,
+            motivo: formRechazo.motivo.value,
+            detalle: formRechazo.detalle.value.trim(),
+        });
         modalRechazo.hide();
         await refrescar();
         showToast(res.mensaje, 'secondary');

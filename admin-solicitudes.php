@@ -13,11 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($accion === 'rechazar') {
         $motivo = trim($_POST['motivo'] ?? '');
-        if (mb_strlen($motivo) < MOTIVO_RECHAZO_MIN || mb_strlen($motivo) > 255) {
-            json_response(['ok' => false, 'error' => 'Escribe un motivo de ' . MOTIVO_RECHAZO_MIN . ' a 255 caracteres; el usuario lo verá.'], 422);
+        $detalle = trim($_POST['detalle'] ?? '');
+        if ($error = validar_rechazo($motivo, $detalle)) {
+            json_response(['ok' => false, 'error' => $error], 422);
         }
-        $n = q("UPDATE solicitudes SET estado = 'rechazada', motivo_rechazo = ?, revisado_por = ?, revisado_en = NOW()
-                WHERE id = ? AND estado = 'pendiente'", [$motivo, current_user()['id'], $id])->rowCount();
+        $n = q("UPDATE solicitudes SET estado = 'rechazada', motivo_rechazo = ?, detalle_rechazo = ?, revisado_por = ?, revisado_en = NOW()
+                WHERE id = ? AND estado = 'pendiente'", [$motivo, $detalle ?: null, current_user()['id'], $id])->rowCount();
         if (!$n) json_response(['ok' => false, 'error' => 'La solicitud no existe o ya fue revisada.'], 409);
         json_response(['ok' => true, 'mensaje' => 'Solicitud rechazada.']);
     }
@@ -88,7 +89,7 @@ require __DIR__ . '/includes/admin-nav.php';
                             <strong><?= e($s['tipo'] === 'concierto' ? $s['artista'] . ' – ' . $s['gira'] : $s['nombre']) ?></strong>
                             <div class="small text-secondary"><?= e(detalle_solicitud($s)) ?></div>
                             <?php if ($s['comentario']): ?><div class="small fst-italic mt-1">“<?= e($s['comentario']) ?>”</div><?php endif; ?>
-                            <?php if ($s['motivo_rechazo']): ?><div class="small mt-1"><strong>Motivo:</strong> <?= e($s['motivo_rechazo']) ?></div><?php endif; ?>
+                            <?php if ($s['motivo_rechazo']): ?><div class="small mt-1"><?= texto_rechazo($s) ?></div><?php endif; ?>
                         </td>
                         <td><a href="<?= url('profile.php?u=' . urlencode($s['username'])) ?>">@<?= e($s['username']) ?></a></td>
                         <td class="text-nowrap"><?= date('d/m/Y', strtotime($s['creado_en'])) ?></td>
@@ -126,14 +127,14 @@ require __DIR__ . '/includes/admin-nav.php';
             <div class="modal-body">
                 <p class="small text-secondary" id="rechazo-resumen"></p>
                 <label class="form-label" for="motivo">Motivo (lo verá el usuario)</label>
-                <select class="form-select mb-2" id="motivo-rapido" aria-label="Motivos frecuentes">
-                    <option value="">Motivos frecuentes…</option>
-                    <option>Ese registro ya existe en el catálogo.</option>
-                    <option>No pudimos confirmar que el evento existió.</option>
-                    <option>Los datos están incompletos o tienen errores.</option>
+                <select class="form-select" id="motivo" name="motivo" required>
+                    <option value="">Elige un motivo…</option>
+                    <?php foreach (MOTIVOS_RECHAZO as $m): ?><option><?= e($m) ?></option><?php endforeach; ?>
                 </select>
-                <textarea class="form-control" id="motivo" name="motivo" rows="3" minlength="<?= MOTIVO_RECHAZO_MIN ?>" maxlength="255" required></textarea>
-                <div class="invalid-feedback">Escribe un motivo de al menos <?= MOTIVO_RECHAZO_MIN ?> caracteres.</div>
+                <div class="invalid-feedback">Elige un motivo de la lista.</div>
+                <label class="form-label mt-3" for="detalle">Explicación <span class="text-secondary" id="detalle-opcional">(opcional)</span></label>
+                <textarea class="form-control" id="detalle" name="detalle" rows="3" minlength="<?= DETALLE_RECHAZO_MIN ?>" maxlength="<?= DETALLE_RECHAZO_MAX ?>"></textarea>
+                <div class="invalid-feedback">Explica el motivo en al menos <?= DETALLE_RECHAZO_MIN ?> caracteres.</div>
             </div>
             <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-danger">Rechazar</button></div>
         </form>

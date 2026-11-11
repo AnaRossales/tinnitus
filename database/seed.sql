@@ -77,8 +77,8 @@ INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, com
 (2, 'concierto', 'Muse', 'Will of the People', '2023-02-10', 2, 'Fui con mis amigos, ¡faltaba en el catálogo!');
 INSERT INTO solicitudes (usuario_id, tipo, nombre, ciudad, capacidad, tipo_recinto, comentario) VALUES
 (3, 'recinto', 'Showcenter Complex', 'San Pedro Garza García, N.L.', 4000, 'Foro', 'Ahí tocan muchas bandas de rock.');
-INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, estado, motivo_rechazo, revisado_por, revisado_en) VALUES
-(4, 'concierto', 'Zoé', 'Sonidos de Karmática', '2024-05-18', 3, 'rechazada', 'Ese concierto ya está registrado en el catálogo.', 1, NOW());
+INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, estado, motivo_rechazo, detalle_rechazo, revisado_por, revisado_en) VALUES
+(4, 'concierto', 'Zoé', 'Sonidos de Karmática', '2024-05-18', 3, 'rechazada', 'Ya existe en el catálogo', 'Ese concierto ya está registrado; búscalo en el catálogo de Zoé.', 1, NOW());
 
 INSERT INTO mensajes_contacto (nombre, email, asunto, mensaje) VALUES
 ('Juan Pérez', 'juan@correo.com', 'Falta un concierto', '¿Pueden agregar el concierto de Muse de 2023?');

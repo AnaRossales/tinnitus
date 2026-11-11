@@ -129,3 +129,10 @@ function badge_estado_solicitud(string $estado): string
         default     => '<span class="badge text-bg-warning">En revisión</span>',
     };
 }
+
+function texto_rechazo(array $s): string
+{
+    $html = '<strong>Motivo:</strong> ' . e($s['motivo_rechazo']);
+    if (!empty($s['detalle_rechazo'])) $html .= ' — ' . e($s['detalle_rechazo']);
+    return $html;
+}

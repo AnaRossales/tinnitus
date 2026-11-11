@@ -124,6 +124,7 @@ CREATE TABLE solicitudes (
     tipo_recinto    ENUM('Estadio','Arena','Auditorio','Foro','Festival','Bar') NULL,
     comentario      VARCHAR(500) NULL,
     motivo_rechazo  VARCHAR(255) NULL,
+    detalle_rechazo VARCHAR(255) NULL,
     creado_id       INT UNSIGNED NULL,
     revisado_por    INT UNSIGNED NULL,
     revisado_en     DATETIME     NULL,

@@ -171,7 +171,7 @@ require __DIR__ . '/includes/header.php';
                     </div>
                     <div class="small text-secondary"><?= e(detalle_solicitud($s)) ?> · enviada el <?= date('d/m/Y', strtotime($s['creado_en'])) ?></div>
                     <?php if ($s['estado'] === 'rechazada' && $s['motivo_rechazo']): ?>
-                        <div class="small mt-1"><strong>Motivo:</strong> <?= e($s['motivo_rechazo']) ?></div>
+                        <div class="small mt-1"><?= texto_rechazo($s) ?></div>
                     <?php endif; ?>
                 </div>
                 <?php if ($s['estado'] === 'aprobada' && $s['creado_id']): ?>

@@ -19,7 +19,9 @@ const ICONOS_RECINTO = [
 
 const MAX_SOLICITUDES_PENDIENTES = 5;
 const COMENTARIO_SOLICITUD_MAX = 500;
-const MOTIVO_RECHAZO_MIN = 5;
+const MOTIVOS_RECHAZO = ['Ya existe en el catálogo', 'Datos incompletos', 'Información incorrecta', 'Otro'];
+const DETALLE_RECHAZO_MIN = 5;
+const DETALLE_RECHAZO_MAX = 255;
 
 const RESENA_MIN = 10;
 const RESENA_MAX = 1000;
@@ -78,6 +80,17 @@ function validar_resena(int $calificacion, string $texto): ?string
     $largo = mb_strlen($texto);
     if ($largo < RESENA_MIN || $largo > RESENA_MAX) return 'La reseña debe tener entre ' . RESENA_MIN . ' y ' . RESENA_MAX . ' caracteres.';
     if (contiene_lenguaje_ofensivo($texto)) return 'Tu reseña contiene lenguaje ofensivo. Revisa las políticas de la comunidad.';
+    return null;
+}
+
+function validar_rechazo(string $motivo, string $detalle): ?string
+{
+    if (!in_array($motivo, MOTIVOS_RECHAZO, true)) return 'Elige un motivo de la lista.';
+    $largo = mb_strlen($detalle);
+    if ($largo > DETALLE_RECHAZO_MAX) return 'La explicación no puede pasar de ' . DETALLE_RECHAZO_MAX . ' caracteres.';
+    if ($motivo === 'Otro' && $largo < DETALLE_RECHAZO_MIN) {
+        return 'Si eliges "Otro", explica el motivo en al menos ' . DETALLE_RECHAZO_MIN . ' caracteres; el usuario lo verá.';
+    }
     return null;
 }
 

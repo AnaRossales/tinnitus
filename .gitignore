@@ -3,3 +3,6 @@ uploads/
 Thumbs.db
 .vscode/
 .idea/
+
+*.docx
+*.pdf

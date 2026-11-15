@@ -348,3 +348,10 @@ tr.removing { opacity: 0; transition: opacity .3s; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.avatar-artista.avatar-sm { width: 36px; height: 36px; font-size: .9rem; }
+.event-header .avatar-artista { width: 40px; height: 40px; border: 2px solid rgba(255, 255, 255, .7); }
+.venue-band.con-foto { background-size: cover; background-position: center; }
+.venue-band.con-foto::before { background: linear-gradient(0deg, rgba(0, 0, 0, .55), transparent 75%); }
+.foto-recinto { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+#modal-reportes .stat-card .value { font-size: 1.4rem; }

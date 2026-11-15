@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'capacidad' => (int) ($_POST['capacidad'] ?? 0),
             'tipo'      => $_POST['tipo'] ?? '',
             'estado'    => ($_POST['estado'] ?? '') === 'inactivo' ? 'inactivo' : 'activo',
+            'foto_url'  => trim($_POST['foto_url'] ?? '') ?: null,
         ];
         if ($d['nombre'] === '' || mb_strlen($d['nombre']) > 120) $errores[] = 'Escribe el nombre del recinto.';
         if ($d['ciudad'] === '' || mb_strlen($d['ciudad']) > 80) $errores[] = 'Escribe la ciudad.';
@@ -39,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errores[] = 'La capacidad debe estar entre 1 y ' . number_format(CAPACIDAD_MAX) . ' personas.';
         }
         if (!in_array($d['tipo'], TIPOS_RECINTO, true)) $errores[] = 'Elige un tipo de recinto.';
+        if ($e = validar_url_http($d['foto_url'], CARPETA_RECINTOS, 'La foto')) $errores[] = $e;
         if (!$errores && q('SELECT 1 FROM recintos WHERE nombre = ? AND ciudad = ? AND id <> ?', [$d['nombre'], $d['ciudad'], $id])->fetchColumn()) {
             $errores[] = 'Ya existe un recinto con ese nombre en esa ciudad.';
         }
@@ -48,10 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (!$errores) {
             if ($id) {
-                q('UPDATE recintos SET nombre = :nombre, ciudad = :ciudad, capacidad = :capacidad, tipo = :tipo, estado = :estado WHERE id = :id', $d + ['id' => $id]);
+                q('UPDATE recintos SET nombre = :nombre, ciudad = :ciudad, capacidad = :capacidad, tipo = :tipo, estado = :estado, foto_url = :foto_url WHERE id = :id', $d + ['id' => $id]);
                 $mensaje = 'Recinto actualizado.';
             } else {
-                q('INSERT INTO recintos (nombre, ciudad, capacidad, tipo, estado) VALUES (:nombre, :ciudad, :capacidad, :tipo, :estado)', $d);
+                q('INSERT INTO recintos (nombre, ciudad, capacidad, tipo, estado, foto_url) VALUES (:nombre, :ciudad, :capacidad, :tipo, :estado, :foto_url)', $d);
                 $mensaje = 'Recinto creado.';
             }
             if (es_ajax()) json_response(['ok' => true, 'mensaje' => $mensaje]);
@@ -83,6 +85,7 @@ $active = 'admin';
 $adminTitle = 'Recintos';
 $adminTab = 'venues';
 $pageScript = 'admin.js';
+$moduloReportes = 'recintos';
 require __DIR__ . '/includes/header.php';
 require __DIR__ . '/includes/admin-nav.php';
 ?>
@@ -129,6 +132,7 @@ require __DIR__ . '/includes/admin-nav.php';
             </ul>
         </div>
         <div class="extra">
+            <button class="btn btn-gray" type="button" data-bs-toggle="modal" data-bs-target="#modal-reportes"><i class="bi bi-bar-chart-line"></i> Reportes</button>
             <button class="btn btn-indigo" type="button" data-nuevo><i class="bi bi-plus-lg"></i> Nuevo recinto</button>
         </div>
     </div>
@@ -144,7 +148,7 @@ require __DIR__ . '/includes/admin-nav.php';
                 </thead>
                 <tbody>
                 <?php foreach ($recintos as $r):
-                    $json = json_encode(['id' => $r['id'], 'nombre' => $r['nombre'], 'ciudad' => $r['ciudad'], 'capacidad' => $r['capacidad'], 'tipo' => $r['tipo'], 'estado' => $r['estado']]); ?>
+                    $json = json_encode(['id' => $r['id'], 'nombre' => $r['nombre'], 'ciudad' => $r['ciudad'], 'capacidad' => $r['capacidad'], 'tipo' => $r['tipo'], 'estado' => $r['estado'], 'foto_url' => $r['foto_url']]); ?>
                     <tr data-id="<?= $r['id'] ?>">
                         <td><?= $r['id'] ?></td>
                         <td class="fw-semibold"><a class="text-reset text-decoration-none" href="<?= url('recinto.php?id=' . $r['id']) ?>" title="Ver página pública"><?= e($r['nombre']) ?></a><div class="small text-secondary fw-normal"><?= $r['conciertos'] ?> concierto(s)</div></td>
@@ -206,6 +210,14 @@ require __DIR__ . '/includes/admin-nav.php';
                         <option value="activo">Activo</option>
                         <option value="inactivo">Inactivo</option>
                     </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="m-foto">Foto (opcional)</label>
+                    <input class="form-control" id="m-foto" name="foto_url" type="text" maxlength="500"
+                           pattern="(https?://.+|<?= CARPETA_RECINTOS ?>[a-z0-9\-]+\.(jpe?g|png|webp))"
+                           placeholder="https://... o <?= CARPETA_RECINTOS ?>nombre.jpg"
+                           data-msg="Escribe una URL que empiece con http:// o https://, o la ruta de una imagen de <?= CARPETA_RECINTOS ?>">
+                    <div class="form-text">Imagen horizontal 2:1, por ejemplo 1200 × 600 px.</div>
                 </div>
             </div>
             <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>

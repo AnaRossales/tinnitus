@@ -47,7 +47,7 @@ require __DIR__ . '/includes/header.php';
         <div class="row g-5 align-items-center">
             <div class="col-md-4"><?= poster($c) ?></div>
             <div class="col-md-8">
-                <p class="artista"><?= e($c['artista']) ?></p>
+                <p class="artista d-flex align-items-center gap-2"><?= foto_artista($c['artista'], $c['artista_foto']) ?><?= e($c['artista']) ?></p>
                 <h1><?= e($c['gira']) ?></h1>
                 <p class="lugar">
                     <a class="link-claro" href="<?= url('recinto.php?id=' . $c['recinto_id']) ?>"><i class="bi bi-geo-alt"></i> <?= e($c['recinto']) ?></a>

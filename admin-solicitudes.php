@@ -55,6 +55,7 @@ $active = 'admin';
 $adminTitle = 'Solicitudes';
 $adminTab = 'solicitudes';
 $pageScript = 'admin-solicitudes.js';
+$moduloReportes = 'solicitudes';
 require __DIR__ . '/includes/header.php';
 require __DIR__ . '/includes/admin-nav.php';
 ?>
@@ -68,7 +69,8 @@ require __DIR__ . '/includes/admin-nav.php';
             <?php endforeach; ?>
         </div>
         <div class="extra">
-            <select class="form-select" aria-label="Tipo" onchange="location.href = this.value">
+            <button class="btn btn-gray" type="button" data-bs-toggle="modal" data-bs-target="#modal-reportes"><i class="bi bi-bar-chart-line"></i> Reportes</button>
+            <select class="form-select w-auto" aria-label="Tipo" onchange="location.href = this.value">
                 <option value="<?= solicitudes_url(['tipo' => '']) ?>">Conciertos y recintos</option>
                 <option value="<?= solicitudes_url(['tipo' => 'concierto']) ?>" <?= $tipo === 'concierto' ? 'selected' : '' ?>>Solo conciertos</option>
                 <option value="<?= solicitudes_url(['tipo' => 'recinto']) ?>" <?= $tipo === 'recinto' ? 'selected' : '' ?>>Solo recintos</option>

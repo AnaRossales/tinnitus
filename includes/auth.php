@@ -157,10 +157,22 @@ function stars(float $rating): string
     return $html . '</span>';
 }
 
+// Las imágenes pueden ser una URL externa, una ruta absoluta (fotos subidas a uploads/)
+// o una ruta dentro de assets/img/.
+function img_src(string $ruta): string
+{
+    return preg_match('#^(https?://|/)#i', $ruta) ? $ruta : url($ruta);
+}
+
+function foto_artista(string $nombre, ?string $foto, string $size = 'sm'): string
+{
+    return avatar(['nombre' => $nombre, 'avatar_url' => $foto], $size, 'avatar-artista');
+}
+
 function poster(array $c, string $extraClass = ''): string
 {
     if (!empty($c['poster_url'])) {
-        return '<img class="poster ' . $extraClass . '" src="' . e($c['poster_url']) . '" alt="Póster de ' . e($c['artista']) . '">';
+        return '<img class="poster ' . $extraClass . '" src="' . e(img_src($c['poster_url'])) . '" alt="Póster de ' . e($c['artista']) . '">';
     }
     $gradiente = 'g' . (((int) $c['id'] - 1) % 7 + 1);
     return '<div class="poster poster-generated ' . $gradiente . ' ' . $extraClass . '" role="img" aria-label="Póster de ' . e($c['artista']) . '">'
@@ -204,7 +216,8 @@ function venue_card(array $r): string
     $gradiente = 'g' . (((int) $r['id'] + 2) % 7 + 1);
     $icono = ICONOS_RECINTO[$r['tipo']] ?? 'bi-geo-alt';
     $html = '<a class="venue-card" href="' . url('recinto.php?id=' . $r['id']) . '">'
-        . '<div class="venue-band ' . $gradiente . '"><i class="bi ' . $icono . '"></i><span>' . e($r['tipo']) . '</span>'
+        . '<div class="venue-band ' . $gradiente . (empty($r['foto_url']) ? '"' : ' con-foto" style="background-image: url(\'' . e(img_src($r['foto_url'])) . '\')"')
+        . '><i class="bi ' . $icono . '"></i><span>' . e($r['tipo']) . '</span>'
         . ($r['estado'] === 'inactivo' ? '<span class="poster-badge">Sin eventos nuevos</span>' : '')
         . ($r['proximos'] ? '<span class="poster-badge">' . $r['proximos'] . ' próximo(s)</span>' : '')
         . '</div><div class="venue-body">'
@@ -219,7 +232,7 @@ function venue_card(array $r): string
 function avatar(array $u, string $size = 'md', string $extraClass = ''): string
 {
     if (!empty($u['avatar_url'])) {
-        return '<img class="avatar avatar-' . $size . ' ' . $extraClass . '" src="' . e($u['avatar_url']) . '" alt="">';
+        return '<img class="avatar avatar-' . $size . ' ' . $extraClass . '" src="' . e(img_src($u['avatar_url'])) . '" alt="">';
     }
     $initial = mb_strtoupper(mb_substr($u['nombre'] ?? $u['username'], 0, 1));
     return '<span class="avatar avatar-' . $size . ' avatar-initial ' . $extraClass . '">' . e($initial) . '</span>';
@@ -240,7 +253,7 @@ function fecha_larga(string $date): string
 }
 
 const CONCIERTO_SELECT = "
-    SELECT c.*, a.nombre AS artista, a.genero, r.nombre AS recinto, r.ciudad,
+    SELECT c.*, a.nombre AS artista, a.genero, a.foto_url AS artista_foto, r.nombre AS recinto, r.ciudad,
            ROUND(AVG(s.calificacion), 1) AS promedio, COUNT(s.id) AS total_resenas
     FROM conciertos c
     JOIN artistas a ON a.id = c.artista_id

@@ -10,6 +10,9 @@ const MINUTOS_SESION = 120;
 const FECHA_MIN_CONCIERTO = '1950-01-01';
 const ANIOS_FUTURO_CONCIERTO = 2;
 const MAX_DESTACADOS = 6;
+const CARPETA_POSTERS = 'assets/img/posters/';
+const CARPETA_ARTISTAS = 'assets/img/artistas/';
+const CARPETA_RECINTOS = 'assets/img/recintos/';
 const CAPACIDAD_MAX = 200000;
 const TIPOS_RECINTO = ['Estadio', 'Arena', 'Auditorio', 'Foro', 'Festival', 'Bar'];
 const ICONOS_RECINTO = [
@@ -114,11 +117,12 @@ function ya_ocurrio(string $fecha): bool
     return $fecha <= date('Y-m-d');
 }
 
-function validar_url_http(?string $url): ?string
+function validar_url_http(?string $url, string $carpeta = CARPETA_POSTERS, string $campo = 'El póster'): ?string
 {
     if ($url === null || $url === '') return null;
+    if (preg_match('#^' . $carpeta . '[a-z0-9-]+\.(jpe?g|png|webp)$#', $url)) return null;
     if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $url)) {
-        return 'La URL del póster debe empezar con http:// o https://';
+        return $campo . ' debe ser una URL que empiece con http:// o https://, o una imagen de ' . $carpeta;
     }
     return null;
 }

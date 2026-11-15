@@ -26,9 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'nombre' => trim($_POST['nombre'] ?? ''),
             'genero' => trim($_POST['genero'] ?? '') ?: null,
             'pais'   => trim($_POST['pais'] ?? '') ?: null,
+            'foto_url' => trim($_POST['foto_url'] ?? '') ?: null,
         ];
         if ($d['nombre'] === '' || mb_strlen($d['nombre']) > 120) $errores[] = 'Escribe el nombre del artista.';
         if (mb_strlen($d['genero'] ?? '') > 60 || mb_strlen($d['pais'] ?? '') > 60) $errores[] = 'Género y país admiten máximo 60 caracteres.';
+        if ($e = validar_url_http($d['foto_url'], CARPETA_ARTISTAS, 'La foto')) $errores[] = $e;
         $duplicado = q('SELECT id FROM artistas WHERE nombre = ? AND id <> ?', [$d['nombre'], $id])->fetchColumn();
         if ($duplicado) $errores[] = 'Ya existe un artista con ese nombre.';
 
@@ -37,10 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (!$errores) {
             if ($id) {
-                q('UPDATE artistas SET nombre = :nombre, genero = :genero, pais = :pais WHERE id = :id', $d + ['id' => $id]);
+                q('UPDATE artistas SET nombre = :nombre, genero = :genero, pais = :pais, foto_url = :foto_url WHERE id = :id', $d + ['id' => $id]);
                 $mensaje = 'Artista actualizado.';
             } else {
-                q('INSERT INTO artistas (nombre, genero, pais) VALUES (:nombre, :genero, :pais)', $d);
+                q('INSERT INTO artistas (nombre, genero, pais, foto_url) VALUES (:nombre, :genero, :pais, :foto_url)', $d);
                 $mensaje = 'Artista creado.';
             }
             if (es_ajax()) json_response(['ok' => true, 'mensaje' => $mensaje]);
@@ -64,6 +66,7 @@ $active = 'admin';
 $adminTitle = 'Artistas';
 $adminTab = 'artists';
 $pageScript = 'admin.js';
+$moduloReportes = 'artistas';
 require __DIR__ . '/includes/header.php';
 require __DIR__ . '/includes/admin-nav.php';
 ?>
@@ -96,6 +99,7 @@ require __DIR__ . '/includes/admin-nav.php';
             </ul>
         </div>
         <div class="extra">
+            <button class="btn btn-gray" type="button" data-bs-toggle="modal" data-bs-target="#modal-reportes"><i class="bi bi-bar-chart-line"></i> Reportes</button>
             <button class="btn btn-indigo" type="button" data-nuevo><i class="bi bi-plus-lg"></i> Nuevo artista</button>
         </div>
     </div>
@@ -109,10 +113,10 @@ require __DIR__ . '/includes/admin-nav.php';
                 </tr></thead>
                 <tbody>
                 <?php foreach ($artistas as $a):
-                    $json = json_encode(['id' => $a['id'], 'nombre' => $a['nombre'], 'genero' => $a['genero'], 'pais' => $a['pais']]); ?>
+                    $json = json_encode(['id' => $a['id'], 'nombre' => $a['nombre'], 'genero' => $a['genero'], 'pais' => $a['pais'], 'foto_url' => $a['foto_url']]); ?>
                     <tr data-id="<?= $a['id'] ?>">
                         <td><?= $a['id'] ?></td>
-                        <td class="fw-semibold"><?= e($a['nombre']) ?></td>
+                        <td class="fw-semibold"><span class="d-inline-flex align-items-center gap-2"><?= foto_artista($a['nombre'], $a['foto_url']) ?><?= e($a['nombre']) ?></span></td>
                         <td><?= e($a['genero']) ?></td>
                         <td><?= e($a['pais']) ?></td>
                         <td><?= $a['conciertos'] ?></td>
@@ -145,6 +149,14 @@ require __DIR__ . '/includes/admin-nav.php';
                 <div class="col-12"><label class="form-label" for="m-nombre">Nombre</label><input class="form-control" id="m-nombre" name="nombre" required maxlength="120"></div>
                 <div class="col-md-6"><label class="form-label" for="m-genero">Género</label><input class="form-control" id="m-genero" name="genero" maxlength="60"></div>
                 <div class="col-md-6"><label class="form-label" for="m-pais">País</label><input class="form-control" id="m-pais" name="pais" maxlength="60"></div>
+                <div class="col-12">
+                    <label class="form-label" for="m-foto">Foto (opcional)</label>
+                    <input class="form-control" id="m-foto" name="foto_url" type="text" maxlength="500"
+                           pattern="(https?://.+|<?= CARPETA_ARTISTAS ?>[a-z0-9\-]+\.(jpe?g|png|webp))"
+                           placeholder="https://... o <?= CARPETA_ARTISTAS ?>nombre.jpg"
+                           data-msg="Escribe una URL que empiece con http:// o https://, o la ruta de una imagen de <?= CARPETA_ARTISTAS ?>">
+                    <div class="form-text">Imagen cuadrada, por ejemplo 600 × 600 px.</div>
+                </div>
             </div>
             <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>
         </form>

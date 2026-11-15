@@ -30,6 +30,8 @@ require __DIR__ . '/includes/header.php';
                 <li class="breadcrumb-item active" aria-current="page"><?= e($r['nombre']) ?></li>
             </ol>
         </nav>
+        <div class="row g-5 align-items-center">
+        <div class="<?= $r['foto_url'] ? 'col-md-7' : 'col-12' ?>">
         <p class="artista"><i class="bi <?= ICONOS_RECINTO[$r['tipo']] ?? 'bi-geo-alt' ?>"></i> <?= e($r['tipo']) ?></p>
         <h1><?= e($r['nombre']) ?></h1>
         <p class="lugar">
@@ -44,6 +46,11 @@ require __DIR__ . '/includes/header.php';
         <?php if ($r['estado'] === 'inactivo'): ?>
             <p class="mt-4 mb-0"><i class="bi bi-info-circle"></i> Este recinto ya no recibe conciertos nuevos; aquí se conserva su historial.</p>
         <?php endif; ?>
+        </div>
+        <?php if ($r['foto_url']): ?>
+            <div class="col-md-5"><img class="foto-recinto" src="<?= e(img_src($r['foto_url'])) ?>" alt="Foto de <?= e($r['nombre']) ?>"></div>
+        <?php endif; ?>
+        </div>
     </div>
 </section>
 

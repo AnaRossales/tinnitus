@@ -14,35 +14,44 @@ INSERT INTO usuarios (nombre, username, email, password_hash, rol, bio) VALUES
  '$2y$10$hSblfkIWW.zwrxHBPvQ5Tu1/0EiDT6YPRU2hSa.zPAIj4Tfsy/JyO', 'usuario',
  'Indie, pop alternativo y festivales al aire libre.');
 
-INSERT INTO artistas (nombre, genero, pais) VALUES
-('Arctic Monkeys', 'Indie Rock', 'Reino Unido'),
-('Taylor Swift', 'Pop', 'Estados Unidos'),
-('Metallica', 'Heavy Metal', 'Estados Unidos'),
-('Zoé', 'Rock Alternativo', 'México'),
-('Bad Bunny', 'Reggaetón', 'Puerto Rico'),
-('The Strokes', 'Indie Rock', 'Estados Unidos'),
-('Coldplay', 'Pop Rock', 'Reino Unido'),
-('Café Tacvba', 'Rock Alternativo', 'México');
+-- Fotos de perfil de los usuarios de prueba (las de usuarios reales se suben a uploads/avatars/).
+UPDATE usuarios SET avatar_url = CONCAT('assets/img/usuarios/', username, '.jpg');
 
-INSERT INTO recintos (nombre, ciudad, capacidad, tipo, estado) VALUES
-('Estadio BBVA', 'Guadalupe, N.L.', 53500, 'Estadio', 'activo'),
-('Arena Monterrey', 'Monterrey, N.L.', 17599, 'Arena', 'activo'),
-('Auditorio Citibanamex', 'Monterrey, N.L.', 7000, 'Auditorio', 'activo'),
-('Parque Fundidora', 'Monterrey, N.L.', 80000, 'Festival', 'activo'),
-('Foro Sol', 'Ciudad de México', 65000, 'Estadio', 'activo'),
-('Café Iguana', 'Monterrey, N.L.', 600, 'Bar', 'inactivo');
+INSERT INTO artistas (nombre, genero, pais, foto_url) VALUES
+('Arctic Monkeys', 'Indie Rock', 'Reino Unido', 'assets/img/artistas/arctic-monkeys.jpg'),
+('Taylor Swift', 'Pop', 'Estados Unidos', 'assets/img/artistas/taylor-swift.jpg'),
+('Metallica', 'Heavy Metal', 'Estados Unidos', 'assets/img/artistas/metallica.jpg'),
+('Zoé', 'Rock Alternativo', 'México', 'assets/img/artistas/zoe.jpg'),
+('Bad Bunny', 'Reggaetón', 'Puerto Rico', 'assets/img/artistas/bad-bunny.jpg'),
+('The Strokes', 'Indie Rock', 'Estados Unidos', 'assets/img/artistas/the-strokes.jpg'),
+('Coldplay', 'Pop Rock', 'Reino Unido', 'assets/img/artistas/coldplay.jpg'),
+('Café Tacvba', 'Rock Alternativo', 'México', 'assets/img/artistas/cafe-tacvba.jpg'),
+('Panteón Rococó', 'Ska', 'México', 'assets/img/artistas/panteon-rococo.jpg'),
+('Milo J', 'Urbano', 'Argentina', 'assets/img/artistas/milo-j.jpg'),
+('Guns N'' Roses', 'Hard Rock', 'Estados Unidos', 'assets/img/artistas/guns-n-roses.jpg');
 
-INSERT INTO conciertos (artista_id, recinto_id, gira, fecha, descripcion, destacado) VALUES
-(1, 2, 'The Car Tour', '2023-03-08', 'Noche de crooners y guitarras en la Arena Monterrey.', 1),
-(2, 5, 'The Eras Tour', '2023-08-24', 'Tres horas y media recorriendo cada era de su carrera.', 1),
-(3, 4, 'M72 World Tour', '2024-09-27', 'Escenario en forma de anillo y pirotecnia a todo lo que da.', 1),
-(4, 3, 'Sonidos de Karmática', '2024-05-18', 'Gira de regreso con visuales espaciales.', 0),
-(5, 1, 'Most Wanted Tour', '2024-11-30', 'Lleno total en el Estadio BBVA.', 1),
-(6, 4, 'Pa''l Norte 2023', '2023-03-31', 'Headliners del primer día del festival.', 0),
-(7, 1, 'Music of the Spheres', '2022-03-30', 'Pulseras luminosas y confeti en cada canción.', 1),
-(8, 3, 'Un Segundo MTV', '2023-10-14', 'Repaso de clásicos con orquesta invitada.', 0),
-(1, 4, 'Pa''l Norte 2026', '2026-03-28', 'Cierre del festival frente a 80 mil personas.', 0),
-(7, 1, 'Music of the Spheres 2027', '2027-04-17', 'Regreso de Coldplay al Estadio BBVA.', 1);
+INSERT INTO recintos (nombre, ciudad, capacidad, tipo, estado, foto_url) VALUES
+('Estadio BBVA', 'Guadalupe, N.L.', 53500, 'Estadio', 'activo', 'assets/img/recintos/estadio-bbva.jpg'),
+('Arena Monterrey', 'Monterrey, N.L.', 17599, 'Arena', 'activo', NULL),
+('Auditorio Citibanamex', 'Monterrey, N.L.', 7000, 'Auditorio', 'activo', 'assets/img/recintos/auditorio-citibanamex.jpg'),
+('Parque Fundidora', 'Monterrey, N.L.', 80000, 'Festival', 'activo', 'assets/img/recintos/parque-fundidora.jpg'),
+('Foro Sol', 'Ciudad de México', 65000, 'Estadio', 'activo', 'assets/img/recintos/foro-sol.jpg'),
+('Café Iguana', 'Monterrey, N.L.', 600, 'Bar', 'inactivo', 'assets/img/recintos/cafe-iguana.jpg');
+
+INSERT INTO conciertos (artista_id, recinto_id, gira, fecha, poster_url, descripcion, destacado) VALUES
+(1, 2, 'The Car Tour', '2023-03-08', 'assets/img/posters/arctic-monkeys-the-car-tour.jpg', 'Noche de crooners y guitarras en la Arena Monterrey.', 1),
+(2, 5, 'The Eras Tour', '2023-08-24', 'assets/img/posters/taylor-swift-eras-tour.jpg', 'Tres horas y media recorriendo cada era de su carrera.', 1),
+(3, 4, 'M72 World Tour', '2024-09-27', 'assets/img/posters/metallica-m72.jpg', 'Escenario en forma de anillo y pirotecnia a todo lo que da.', 1),
+(4, 3, 'Sonidos de Karmática', '2024-05-18', 'assets/img/posters/zoe-sonidos-de-karmatica.jpg', 'Gira de regreso con visuales espaciales.', 0),
+(5, 1, 'Most Wanted Tour', '2024-11-30', 'assets/img/posters/bad-bunny.jpg', 'Lleno total en el Estadio BBVA.', 1),
+(6, 4, 'Pa''l Norte 2023', '2023-03-31', 'assets/img/posters/the-strokes-pal-norte-2023.jpg', 'Headliners del primer día del festival.', 0),
+(7, 1, 'Music of the Spheres', '2022-03-30', 'assets/img/posters/coldplay-music-of-the-spheres.jpg', 'Pulseras luminosas y confeti en cada canción.', 1),
+(8, 3, 'Un Segundo MTV', '2023-10-14', 'assets/img/posters/cafe-tacvba-un-segundo.jpg', 'Repaso de clásicos con orquesta invitada.', 0),
+(1, 4, 'Pa''l Norte 2026', '2026-03-28', 'assets/img/posters/pal-norte-2026.jpg', 'Cierre del festival frente a 80 mil personas.', 0),
+(7, 1, 'Music of the Spheres 2027', '2027-04-17', NULL, 'Regreso de Coldplay al Estadio BBVA.', 1),
+(9, 5, 'XXX Generación del 95', '2025-11-28', 'assets/img/posters/panteon-rococo.jpg', 'Treinta años de ska con invitados en el antes Foro Sol.', 0),
+(10, 3, 'La vida era más corta Tour', '2025-06-02', 'assets/img/posters/milo-j.jpg', 'Primera vuelta de su gira mundial en Monterrey.', 0),
+(11, 1, 'Gira 2021', '2021-10-12', 'assets/img/posters/guns-n-roses-monterrey.jpg', 'Regreso a Monterrey con un setlist de casi tres horas.', 0);
 
 INSERT INTO resenas (usuario_id, concierto_id, calificacion, texto) VALUES
 (2, 1, 5, 'Alex Turner en su faceta más elegante. "505" al final me dejó sin voz.'),

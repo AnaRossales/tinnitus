@@ -21,7 +21,8 @@ CREATE TABLE artistas (
     id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre    VARCHAR(120) NOT NULL UNIQUE,
     genero    VARCHAR(60)  NULL,
-    pais      VARCHAR(60)  NULL
+    pais      VARCHAR(60)  NULL,
+    foto_url  VARCHAR(500) NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE recintos (
@@ -31,6 +32,7 @@ CREATE TABLE recintos (
     capacidad  INT UNSIGNED NOT NULL,
     tipo       ENUM('Estadio','Arena','Auditorio','Foro','Festival','Bar') NOT NULL,
     estado     ENUM('activo','inactivo') NOT NULL DEFAULT 'activo',
+    foto_url   VARCHAR(500) NULL,
     CONSTRAINT chk_capacidad CHECK (capacidad BETWEEN 1 AND 200000),
     CONSTRAINT uq_recinto UNIQUE (nombre, ciudad)
 ) ENGINE=InnoDB;

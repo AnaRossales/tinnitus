@@ -18,5 +18,9 @@
 <?php if (!empty($pageScript)): ?>
 <script src="<?= url('assets/js/' . $pageScript) ?>"></script>
 <?php endif; ?>
+<?php if (!empty($moduloReportes)): ?>
+<?php require __DIR__ . '/reportes-modal.php'; ?>
+<script src="<?= url('assets/js/reportes.js') ?>"></script>
+<?php endif; ?>
 </body>
 </html>

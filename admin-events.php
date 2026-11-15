@@ -113,6 +113,7 @@ $active = 'admin';
 $adminTitle = 'Conciertos';
 $adminTab = 'events';
 $pageScript = 'admin.js';
+$moduloReportes = 'conciertos';
 require __DIR__ . '/includes/header.php';
 require __DIR__ . '/includes/admin-nav.php';
 ?>
@@ -165,6 +166,7 @@ require __DIR__ . '/includes/admin-nav.php';
             </ul>
         </div>
         <div class="extra">
+            <button class="btn btn-gray" type="button" data-bs-toggle="modal" data-bs-target="#modal-reportes"><i class="bi bi-bar-chart-line"></i> Reportes</button>
             <button class="btn btn-indigo" type="button" data-nuevo><i class="bi bi-plus-lg"></i> Nuevo concierto</button>
         </div>
     </div>
@@ -250,9 +252,12 @@ require __DIR__ . '/includes/admin-nav.php';
                            data-msg="La fecha debe estar entre el 01/01/1950 y el <?= date('d/m/Y', strtotime(fecha_max_concierto())) ?>.">
                 </div>
                 <div class="col-12">
-                    <label class="form-label" for="m-poster">URL del póster (opcional)</label>
-                    <input class="form-control" id="m-poster" name="poster_url" type="url" maxlength="500" pattern="https?://.+"
-                           placeholder="https://..." data-msg="Debe ser una dirección que empiece con http:// o https://">
+                    <label class="form-label" for="m-poster">Póster (opcional)</label>
+                    <input class="form-control" id="m-poster" name="poster_url" type="text" maxlength="500"
+                           pattern="(https?://.+|<?= CARPETA_POSTERS ?>[a-z0-9\-]+\.(jpe?g|png|webp))"
+                           placeholder="https://... o <?= CARPETA_POSTERS ?>nombre.jpg"
+                           data-msg="Escribe una URL que empiece con http:// o https://, o la ruta de una imagen de <?= CARPETA_POSTERS ?>">
+                    <div class="form-text">Imagen vertical 3:4, por ejemplo 600 × 800 px.</div>
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="m-desc">Descripción</label>

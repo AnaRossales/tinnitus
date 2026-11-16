@@ -43,7 +43,7 @@ INSERT INTO conciertos (artista_id, recinto_id, gira, fecha, poster_url, descrip
 (2, 5, 'The Eras Tour', '2023-08-24', 'assets/img/posters/taylor-swift-eras-tour.jpg', 'Tres horas y media recorriendo cada era de su carrera.', 1),
 (3, 4, 'M72 World Tour', '2024-09-27', 'assets/img/posters/metallica-m72.jpg', 'Escenario en forma de anillo y pirotecnia a todo lo que da.', 1),
 (4, 3, 'Sonidos de Karmática', '2024-05-18', 'assets/img/posters/zoe-sonidos-de-karmatica.jpg', 'Gira de regreso con visuales espaciales.', 0),
-(5, 1, 'Most Wanted Tour', '2024-11-30', 'assets/img/posters/bad-bunny.jpg', 'Lleno total en el Estadio BBVA.', 1),
+(5, 1, 'Debí Tirar Más Fotos World Tour', '2024-11-30', 'assets/img/posters/bad-bunny.jpg', 'Lleno total en el Estadio BBVA.', 1),
 (6, 4, 'Pa''l Norte 2023', '2023-03-31', 'assets/img/posters/the-strokes-pal-norte-2023.jpg', 'Headliners del primer día del festival.', 0),
 (7, 1, 'Music of the Spheres', '2022-03-30', 'assets/img/posters/coldplay-music-of-the-spheres.jpg', 'Pulseras luminosas y confeti en cada canción.', 1),
 (8, 3, 'Un Segundo MTV', '2023-10-14', 'assets/img/posters/cafe-tacvba-un-segundo.jpg', 'Repaso de clásicos con orquesta invitada.', 0),
@@ -67,12 +67,27 @@ INSERT INTO resenas (usuario_id, concierto_id, calificacion, texto) VALUES
 (2, 7, 5, 'Las pulseras de luz hacen que todo se sienta mágico.'),
 (3, 7, 4, 'Muy emotivo. Chris Martin tiene una energía increíble.'),
 (4, 6, 4, 'Julian Casablancas sonó mejor de lo que esperaba.'),
-(2, 8, 5, 'La versión de "Eres" con orquesta fue lo mejor de la noche.');
+(2, 8, 5, 'La versión de "Eres" con orquesta fue lo mejor de la noche.'),
+(3, 2, 4, 'No soy fan, pero el show es impresionante de principio a fin.'),
+(2, 4, 4, 'Sonó increíble aunque el auditorio estaba muy caliente.'),
+(3, 6, 3, 'Buen set, pero muy corto para ser headliner.'),
+(4, 7, 5, 'Lloré con "Fix You". Una noche que no voy a olvidar.'),
+(3, 8, 4, 'Rubén se aventó todos los clásicos. Gran ambiente.'),
+(2, 9, 5, 'Cerrar Pa''l Norte con Arctic Monkeys fue perfecto.'),
+(4, 9, 4, 'Mucho calor y mucha fila, pero el cierre valió la pena.'),
+(2, 11, 5, 'Treinta años y siguen con la misma energía. ¡Puro ska!'),
+(3, 11, 4, 'El slam no paró en toda la noche, salí molido pero feliz.'),
+(4, 12, 5, 'Milo J canta igual que en el disco. El auditorio retumbaba.'),
+(3, 13, 5, 'Axl todavía la rompe. "November Rain" con lluvia de verdad.'),
+(2, 13, 4, 'Casi tres horas de rock, aunque el sonido falló al inicio.');
 
 INSERT INTO asistencias (usuario_id, concierto_id) VALUES
 (2,1),(2,2),(2,3),(2,7),(2,8),
 (3,1),(3,3),(3,5),(3,7),
-(4,1),(4,2),(4,4),(4,5),(4,6);
+(4,1),(4,2),(4,4),(4,5),(4,6),
+(2,4),(2,9),(2,11),(2,13),
+(3,2),(3,6),(3,8),(3,11),(3,13),
+(4,7),(4,9),(4,12);
 
 INSERT INTO top4 (usuario_id, posicion, concierto_id) VALUES
 (2,1,1),(2,2,2),(2,3,7),(2,4,8),
@@ -86,8 +101,18 @@ INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, com
 (2, 'concierto', 'Muse', 'Will of the People', '2023-02-10', 2, 'Fui con mis amigos, ¡faltaba en el catálogo!');
 INSERT INTO solicitudes (usuario_id, tipo, nombre, ciudad, capacidad, tipo_recinto, comentario) VALUES
 (3, 'recinto', 'Showcenter Complex', 'San Pedro Garza García, N.L.', 4000, 'Foro', 'Ahí tocan muchas bandas de rock.');
-INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, estado, motivo_rechazo, detalle_rechazo, revisado_por, revisado_en) VALUES
-(4, 'concierto', 'Zoé', 'Sonidos de Karmática', '2024-05-18', 3, 'rechazada', 'Ya existe en el catálogo', 'Ese concierto ya está registrado; búscalo en el catálogo de Zoé.', 1, NOW());
+INSERT INTO solicitudes (usuario_id, tipo, artista, gira, fecha, recinto_id, estado, motivo_rechazo, detalle_rechazo, creado_id, revisado_por, revisado_en, creado_en) VALUES
+(2, 'concierto', 'Panteón Rococó', 'XXX Generación del 95', '2025-11-28', 5, 'aprobada', NULL, NULL, 11, 1, '2025-12-03 10:05', '2025-12-02 18:20'),
+(4, 'concierto', 'Milo J', 'La vida era más corta Tour', '2025-06-02', 3, 'aprobada', NULL, NULL, 12, 1, '2026-01-15 09:30', '2026-01-14 21:40'),
+(3, 'concierto', 'Guns N'' Roses', 'Gira 2021', '2021-10-12', 1, 'aprobada', NULL, NULL, 13, 1, '2026-02-05 16:45', '2026-02-03 12:00'),
+(2, 'concierto', 'Coldplay', 'Music of the Spheres', '2022-03-30', 1, 'rechazada', 'Ya existe en el catálogo', NULL, NULL, 1, '2026-03-11 11:00', '2026-03-10 19:00'),
+(3, 'concierto', 'Arctic Monkeys', 'Pa''l Norte 2026', '2026-03-28', 4, 'aprobada', NULL, NULL, 9, 1, '2026-04-02 13:00', '2026-04-02 08:15'),
+(3, 'concierto', 'Metalica', 'M72', '2024-09-27', 4, 'rechazada', 'Datos incompletos', 'Falta el nombre completo de la gira y el artista está mal escrito.', NULL, 1, '2026-05-22 09:00', '2026-05-20 22:10'),
+(4, 'concierto', 'The Strokes', 'Pa''l Norte 2023', '2023-03-30', 4, 'rechazada', 'Información incorrecta', 'La fecha correcta es el 31 de marzo de 2023.', NULL, 1, '2026-07-08 20:15', '2026-07-08 17:30'),
+(4, 'concierto', 'Zoé', 'Sonidos de Karmática', '2024-05-18', 3, 'rechazada', 'Ya existe en el catálogo', 'Ese concierto ya está registrado; búscalo en el catálogo de Zoé.', NULL, 1, '2026-08-20 10:00', '2026-08-19 11:00');
+INSERT INTO solicitudes (usuario_id, tipo, nombre, ciudad, capacidad, tipo_recinto, estado, motivo_rechazo, detalle_rechazo, creado_id, revisado_por, revisado_en, creado_en) VALUES
+(2, 'recinto', 'Café Iguana', 'Monterrey, N.L.', 600, 'Bar', 'aprobada', NULL, NULL, 6, 1, '2025-11-11 09:40', '2025-11-10 15:00'),
+(4, 'recinto', 'Arena Mty', 'Monterrey, N.L.', 17000, 'Arena', 'rechazada', 'Ya existe en el catálogo', 'Es la Arena Monterrey, ya está registrada.', NULL, 1, '2026-09-03 10:20', '2026-09-02 13:00');
 
 INSERT INTO mensajes_contacto (nombre, email, asunto, mensaje) VALUES
 ('Juan Pérez', 'juan@correo.com', 'Falta un concierto', '¿Pueden agregar el concierto de Muse de 2023?');

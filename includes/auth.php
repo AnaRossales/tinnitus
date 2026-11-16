@@ -14,6 +14,10 @@ if (isset($_SESSION['user'], $_SESSION['ultima_actividad'])
 }
 $_SESSION['ultima_actividad'] = time();
 
+if (isset($_SESSION['user']) && !q('SELECT 1 FROM usuarios WHERE id = ?', [$_SESSION['user']['id']])->fetchColumn()) {
+    unset($_SESSION['user']);
+}
+
 function current_user(): ?array
 {
     return $_SESSION['user'] ?? null;

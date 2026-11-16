@@ -6,3 +6,4 @@ Thumbs.db
 
 *.docx
 *.pdf
+lib/dompdf/vendor/dompdf/dompdf/lib/fonts/*.ufm.json

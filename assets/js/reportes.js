@@ -6,8 +6,11 @@ const tablaReporte = document.getElementById('reporte-tabla');
 async function cargarReporte() {
     const params = new URLSearchParams(new FormData(formReportes));
     params.set('modulo', modalReportes.dataset.modulo);
+    const url = modalReportes.dataset.url + '?' + params;
+    document.getElementById('exportar-csv').href = url + '&formato=csv';
+    document.getElementById('exportar-pdf').href = url + '&formato=pdf';
     try {
-        const res = await fetch(modalReportes.dataset.url + '?' + params, { headers: { 'Accept': 'application/json' } });
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
         const datos = await res.json();
         if (!datos.ok) throw new Error(datos.error);
         mostrarReporte(datos);

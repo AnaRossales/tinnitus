@@ -37,6 +37,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <a class="btn btn-outline-secondary" id="exportar-csv" href="#"><i class="bi bi-filetype-csv"></i> Exportar CSV</a>
+                <a class="btn btn-outline-secondary" id="exportar-pdf" href="#"><i class="bi bi-filetype-pdf"></i> Exportar PDF</a>
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>

@@ -11,6 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         [$ok, $mensaje] = aprobar_solicitud($id, current_user()['id']);
         json_response(['ok' => $ok, 'mensaje' => $mensaje, 'error' => $ok ? null : $mensaje], $ok ? 200 : 422);
     }
+    if ($accion === 'editar') {
+        $tipo = q("SELECT tipo FROM solicitudes WHERE id = ? AND estado = 'pendiente'", [$id])->fetchColumn();
+        if (!$tipo) json_response(['ok' => false, 'error' => 'La solicitud no existe o ya fue revisada.'], 409);
+        $d = datos_solicitud(['tipo' => $tipo] + $_POST);
+        if ($errores = validar_solicitud($d, $id)) {
+            json_response(['ok' => false, 'error' => implode(' ', $errores)], 422);
+        }
+        $campos = array_diff_key($d, ['tipo' => 0, 'comentario' => 0]);
+        $set = implode(', ', array_map(fn($c) => "$c = ?", array_keys($campos)));
+        q("UPDATE solicitudes SET $set WHERE id = ? AND estado = 'pendiente'", array_merge(array_values($campos), [$id]));
+        json_response(['ok' => true, 'mensaje' => 'Solicitud actualizada.']);
+    }
     if ($accion === 'rechazar') {
         $motivo = trim($_POST['motivo'] ?? '');
         $detalle = trim($_POST['detalle'] ?? '');
@@ -44,6 +56,7 @@ $solicitudes = q("SELECT s.*, u.username, r.nombre AS recinto, rev.username AS r
                   $where ORDER BY s.estado = 'pendiente' DESC, s.creado_en DESC
                   LIMIT 10 OFFSET $offset", $params)->fetchAll();
 $conteo = q("SELECT estado, COUNT(*) FROM solicitudes GROUP BY estado")->fetchAll(PDO::FETCH_KEY_PAIR);
+$recintosActivos = q("SELECT id, nombre, ciudad FROM recintos WHERE estado = 'activo' ORDER BY nombre")->fetchAll();
 
 function solicitudes_url(array $cambios): string
 {
@@ -84,7 +97,8 @@ require __DIR__ . '/includes/admin-nav.php';
                 <thead><tr><th>ID</th><th>Tipo</th><th>Solicitud</th><th>Usuario</th><th>Enviada</th><th>Estado</th><th class="acciones">Acciones</th></tr></thead>
                 <tbody>
                 <?php foreach ($solicitudes as $s): ?>
-                    <tr data-id="<?= $s['id'] ?>" data-resumen="<?= e(resumen_solicitud($s)) ?>">
+                    <tr data-id="<?= $s['id'] ?>" data-resumen="<?= e(resumen_solicitud($s)) ?>"
+                        data-datos="<?= e(json_encode(array_intersect_key($s, array_flip(['tipo', 'artista', 'gira', 'fecha', 'recinto_id', 'nombre', 'ciudad', 'capacidad', 'tipo_recinto', 'comentario'])))) ?>">
                         <td><?= $s['id'] ?></td>
                         <td class="text-nowrap"><i class="bi <?= $s['tipo'] === 'concierto' ? 'bi-music-note-beamed' : 'bi-building' ?>"></i> <?= ucfirst($s['tipo']) ?></td>
                         <td style="min-width: 260px">
@@ -101,6 +115,7 @@ require __DIR__ . '/includes/admin-nav.php';
                         </td>
                         <td class="acciones">
                             <?php if ($s['estado'] === 'pendiente'): ?>
+                                <button class="btn btn-sm btn-light btn-editar" title="Corregir los datos"><i class="bi bi-pencil-fill"></i> Editar</button>
                                 <button class="btn btn-sm btn-success btn-aprobar" title="Aprobar y agregar al catálogo"><i class="bi bi-check-lg"></i> Aprobar</button>
                                 <button class="btn btn-sm btn-outline-danger btn-rechazar" title="Rechazar"><i class="bi bi-x-lg"></i> Rechazar</button>
                             <?php elseif ($s['estado'] === 'aprobada' && $s['creado_id']): ?>
@@ -119,6 +134,42 @@ require __DIR__ . '/includes/admin-nav.php';
             <span><?= $total ?> solicitud(es) · página <?= $pagina ?> de <?= $paginas ?></span>
             <?= paginacion($pagina, $paginas, 'admin-solicitudes.php') ?>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-editar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" id="form-editar" novalidate>
+            <div class="modal-header"><h2 class="modal-title h5">Editar solicitud</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+            <div class="modal-body">
+                <fieldset class="row g-3" id="campos-concierto">
+                    <div class="col-12"><label class="form-label" for="e-artista">Artista o banda</label><input class="form-control" id="e-artista" name="artista" required maxlength="120"></div>
+                    <div class="col-12"><label class="form-label" for="e-gira">Gira o evento</label><input class="form-control" id="e-gira" name="gira" required maxlength="150"></div>
+                    <div class="col-md-7">
+                        <label class="form-label" for="e-recinto">Recinto</label>
+                        <select class="form-select" id="e-recinto" name="recinto_id" required>
+                            <option value="">Selecciona...</option>
+                            <?php foreach ($recintosActivos as $r): ?><option value="<?= $r['id'] ?>"><?= e($r['nombre'] . ' · ' . $r['ciudad']) ?></option><?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-5"><label class="form-label" for="e-fecha">Fecha</label><input class="form-control" id="e-fecha" name="fecha" type="date" required min="<?= FECHA_MIN_CONCIERTO ?>" max="<?= fecha_max_concierto() ?>"></div>
+                </fieldset>
+                <fieldset class="row g-3" id="campos-recinto">
+                    <div class="col-12"><label class="form-label" for="e-nombre">Nombre del recinto</label><input class="form-control" id="e-nombre" name="nombre" required maxlength="120"></div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="e-tipo">Tipo</label>
+                        <select class="form-select" id="e-tipo" name="tipo_recinto" required>
+                            <option value="">Selecciona...</option>
+                            <?php foreach (TIPOS_RECINTO as $t): ?><option><?= $t ?></option><?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label" for="e-capacidad">Capacidad</label><input class="form-control" id="e-capacidad" name="capacidad" type="number" min="1" max="<?= CAPACIDAD_MAX ?>" required></div>
+                    <div class="col-12"><label class="form-label" for="e-ciudad">Ciudad</label><input class="form-control" id="e-ciudad" name="ciudad" required maxlength="80"></div>
+                </fieldset>
+                <p class="small text-secondary fst-italic mt-3 mb-0" id="e-comentario"></p>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar cambios</button></div>
+        </form>
     </div>
 </div>
 

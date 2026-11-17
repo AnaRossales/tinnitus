@@ -5,5 +5,4 @@ Thumbs.db
 .idea/
 
 *.docx
-*.pdf
 lib/dompdf/vendor/dompdf/dompdf/lib/fonts/*.ufm.json

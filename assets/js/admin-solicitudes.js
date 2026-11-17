@@ -1,6 +1,8 @@
 const tabla = document.getElementById('tabla');
 const modalRechazo = new bootstrap.Modal(document.getElementById('modal-rechazo'));
 const formRechazo = document.getElementById('form-rechazo');
+const modalEditar = new bootstrap.Modal(document.getElementById('modal-editar'));
+const formEditar = document.getElementById('form-editar');
 let filaActual = null;
 
 async function refrescar() {
@@ -28,6 +30,24 @@ tabla.addEventListener('click', async event => {
             cargando(btnAprobar, false);
             showToast(err.message, 'danger');
         }
+    }
+
+    if (event.target.closest('.btn-editar')) {
+        filaActual = fila;
+        const datos = JSON.parse(fila.dataset.datos);
+        const esConcierto = datos.tipo === 'concierto';
+        formEditar.reset();
+        formEditar.classList.remove('was-validated');
+        for (const [id, mostrar] of [['campos-concierto', esConcierto], ['campos-recinto', !esConcierto]]) {
+            const campos = document.getElementById(id);
+            campos.hidden = !mostrar;
+            campos.disabled = !mostrar;
+        }
+        for (const [campo, valor] of Object.entries(datos)) {
+            if (formEditar.elements[campo]) formEditar.elements[campo].value = valor ?? '';
+        }
+        document.getElementById('e-comentario').textContent = datos.comentario ? `Comentario del usuario: “${datos.comentario}”` : '';
+        modalEditar.show();
     }
 
     if (event.target.closest('.btn-rechazar')) {
@@ -66,6 +86,30 @@ formRechazo.addEventListener('submit', async event => {
         modalRechazo.hide();
         await refrescar();
         showToast(res.mensaje, 'secondary');
+    } catch (err) {
+        showToast(err.message, 'danger');
+    } finally {
+        cargando(boton, false);
+    }
+});
+
+formEditar.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!formEditar.checkValidity()) {
+        formEditar.classList.add('was-validated');
+        return;
+    }
+    const boton = formEditar.querySelector('[type="submit"]');
+    cargando(boton, true);
+    try {
+        const res = await postJSON(location.pathname, {
+            accion: 'editar',
+            id: filaActual.dataset.id,
+            ...Object.fromEntries(new FormData(formEditar)),
+        });
+        modalEditar.hide();
+        await refrescar();
+        showToast(res.mensaje);
     } catch (err) {
         showToast(err.message, 'danger');
     } finally {
